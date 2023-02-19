@@ -271,7 +271,7 @@ async function handleRTCDataChannels(peerId) {
         event.channel.onmessage = (msg) => {
             let config = {};
             try {
-                config = JSON.parse(msg.data);
+                config = JSON.parse(filterXSS(msg.data));
                 handleIncomingDataChannelMessage(config);
             } catch (err) {
                 console.log('Datachannel error', err);
@@ -935,7 +935,7 @@ function sendMessage() {
         },
     }).then((result) => {
         if (result.isDenied) pasteAndSendMsg();
-        if (result.isConfirmed) emitDcMsg(result.value);
+        if (result.isConfirmed) emitDcMsg(sanitizeMsg(result.value));
     });
 }
 
@@ -967,7 +967,7 @@ function handleMessage(config) {
         },
     }).then((result) => {
         if (result.isDenied) copyToClipboard(config.msg);
-        if (result.isConfirmed) emitDcMsg(result.value);
+        if (result.isConfirmed) emitDcMsg(sanitizeMsg(result.value));
     });
 }
 
